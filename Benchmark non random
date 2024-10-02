@@ -1,0 +1,61 @@
+import time
+import random
+import matplotlib.pyplot as plt
+
+def pivot_split(arr,low,high):
+    key=arr[high]  
+    left= low
+    right=high- 1
+    while left<=right:
+        if arr[left]< key:
+            left +=1
+        elif arr[left]>key:
+            arr[left],arr[right]=arr[right],arr[left]
+            right -=1
+        else:
+            left+=1 
+    arr[left],arr[high]=arr[high],arr[left]
+    return left
+def nonrandom_quicksort(arr,low,high):
+    if low<high:
+        key_index=pivot_split(arr,low,high)
+        nonrandom_quicksort(arr,low,key_index- 1)
+        nonrandom_quicksort(arr,key_index+1,high)
+def create_input_array(size,scenario='average'):
+    if scenario=='best':
+        return list(range(1,size+1))
+    elif scenario == 'worst':
+        return list(range(size,0,-1))
+    else:
+        return [random.randint(1, 1000) for _ in range(size)]
+def calculate_average_time(sort_function,input_creator,array_size,trials):
+    total_duration = 0
+    for _ in range(trials):
+        data = input_creator(array_size)
+        start_time = time.time()
+        sort_function(data,0,len(data)- 1) 
+        end_time =time.time()
+        total_duration+=end_time-start_time
+    return total_duration
+def performance_benchmark(sort_function,sizes,trials):
+    time_records=[]
+    for size in sizes:
+        avg_time =calculate_average_time(sort_function,lambda s:create_input_array(s),size,trials)
+        time_records.append(avg_time)
+        print(f"Completed size{size}")
+    return time_records
+if __name__=="__main__":
+    input_sizes =[10, 100, 500, 1000, 2000]
+    number_of_trials= 10
+    best_case_times =performance_benchmark(nonrandom_quicksort, input_sizes, number_of_trials)  # Best case
+    worst_case_times =performance_benchmark(nonrandom_quicksort, input_sizes, number_of_trials)  # Worst case
+    average_case_times=performance_benchmark(nonrandom_quicksort, input_sizes, number_of_trials)  # Average case
+    plt.plot(input_sizes, best_case_times, label='Best Case')
+    plt.plot(input_sizes,worst_case_times,label='Worst Case')
+    plt.plot(input_sizes,average_case_times,label='Average Case')
+    plt.xlabel('Input Size')
+    plt.ylabel('Time (seconds)')
+    plt.title('Non-Random QuickSort Performance')
+    plt.legend()
+    plt.show()
+
