@@ -1,0 +1,29 @@
+import random
+
+def pivot_split(array,low,high):
+    key=array[high]  
+    left= low
+    right =high - 1
+    while left<= right:
+        if array[left]<key:
+            left+= 1
+        elif array[left]>key:
+            array[left],array[right]=array[right],array[left]
+            right-=1
+        else:
+            left+=1
+    array[left],array[high]= array[high],array[left]
+    return left
+def random_quicksort(array):
+    def recursive_quicksort(low,high):
+        if low<high:
+            key_index=pivot_split(array,low,high)
+            recursive_quicksort(low,key_index- 1)
+            recursive_quicksort(key_index+1,high)
+    recursive_quicksort(0,len(array)- 1)
+#Example
+if __name__== "__main__":
+    test_array=[35,20,25,10,72,13,1]
+    print("Input Array Before Sorting:",test_array)
+    random_quicksort(test_array)
+    print("Array sorted using Enhanced QuickSort:",test_array)
